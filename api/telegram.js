@@ -28,9 +28,7 @@ export default async function handler(req, res) {
 
       const data = await tg.json();
 
-      const messages = (data.result || []).filter(
-        m => m.message?.chat?.id == bot.chatId
-      );
+      const messages = data.result || [];
 
       const lastMsg =
         messages.slice(-1)[0]?.message?.text || "--";
