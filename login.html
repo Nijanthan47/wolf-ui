@@ -1,284 +1,1258 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8">
-<title>WOLF Access</title>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>WOLF Ecosystem Access</title>
 
-<link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@500;700&family=Inter:wght@300;400;600&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@500;700;800&family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet" />
 
-<style>
+  <style>
+    /* =========================================================
+       001. RESET
+    ========================================================= */
+    *,
+    *::before,
+    *::after {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
 
-/* ================= BASE ================= */
+    html,
+    body {
+      width: 100%;
+      height: 100%;
+    }
 
-body {
-  margin: 0;
-  height: 100vh;
-  background: #000;
-  color: #fff;
+    body {
+      overflow: hidden;
+      font-family: "Inter", sans-serif;
+      color: #ffffff;
+      background:
+        radial-gradient(circle at 18% 42%, rgba(0, 255, 200, 0.10), transparent 28%),
+        radial-gradient(circle at 82% 42%, rgba(255, 77, 77, 0.10), transparent 28%),
+        radial-gradient(circle at 50% 10%, rgba(0, 170, 255, 0.08), transparent 24%),
+        linear-gradient(180deg, #02050a 0%, #07111b 45%, #09131f 100%);
+      position: relative;
+    }
 
-  display: flex;
-  justify-content: center;
-  align-items: center;
+    /* =========================================================
+       002. ROOT STAGE
+    ========================================================= */
+    #app {
+      position: relative;
+      width: 100%;
+      height: 100%;
+      overflow: hidden;
+      isolation: isolate;
+    }
 
-  font-family: 'Inter', sans-serif;
-  overflow: hidden;
-}
+    /* =========================================================
+       003. BACKGROUND SYSTEM
+    ========================================================= */
+    .bg-noise {
+      position: absolute;
+      inset: 0;
+      opacity: 0.03;
+      pointer-events: none;
+      background-image: radial-gradient(circle, #ffffff 0.7px, transparent 0.7px);
+      background-size: 18px 18px;
+      z-index: 0;
+    }
 
-/* ================= BACKGROUND ================= */
+    .bg-grid {
+      position: absolute;
+      inset: -30%;
+      pointer-events: none;
+      z-index: 0;
+      opacity: 0.38;
+      background-image:
+        linear-gradient(rgba(255,255,255,0.045) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(255,255,255,0.045) 1px, transparent 1px);
+      background-size: 62px 62px;
+      transform: perspective(900px) rotateX(68deg) scale(1.55);
+      transform-origin: center;
+      animation: gridShift 20s linear infinite;
+    }
 
-#bg {
-  position: absolute;
-  width: 100%;
-  height: 100%;
-  overflow: hidden;
-}
+    @keyframes gridShift {
+      from {
+        transform: perspective(900px) rotateX(68deg) scale(1.55) translate3d(0, 0, 0);
+      }
+      to {
+        transform: perspective(900px) rotateX(68deg) scale(1.55) translate3d(-62px, -62px, 0);
+      }
+    }
 
-/* 🔥 GRID */
+    .bg-center-glow {
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      width: 720px;
+      height: 720px;
+      transform: translate(-50%, -50%);
+      pointer-events: none;
+      z-index: 0;
+      background:
+        radial-gradient(circle, rgba(0,255,200,0.08) 0%, rgba(0,170,255,0.05) 34%, transparent 68%);
+      filter: blur(78px);
+      animation: centerGlowPulse 8s ease-in-out infinite;
+    }
 
-#grid {
-  position: absolute;
-  width: 100%;
-  height: 100%;
+    @keyframes centerGlowPulse {
+      0%, 100% {
+        opacity: 0.78;
+        transform: translate(-50%, -50%) scale(1);
+      }
+      50% {
+        opacity: 1;
+        transform: translate(-50%, -50%) scale(1.08);
+      }
+    }
 
-  background:
-    linear-gradient(rgba(0,255,200,0.08) 1px, transparent 1px),
-    linear-gradient(90deg, rgba(0,255,200,0.08) 1px, transparent 1px);
+    .bg-orb-left,
+    .bg-orb-right {
+      position: absolute;
+      top: 50%;
+      width: 420px;
+      height: 420px;
+      border-radius: 50%;
+      filter: blur(95px);
+      pointer-events: none;
+      z-index: 0;
+      transform: translateY(-50%);
+    }
 
-  background-size: 50px 50px;
-}
+    .bg-orb-left {
+      left: -90px;
+      background: radial-gradient(circle, rgba(0,255,200,0.16), transparent 70%);
+      animation: sideOrbLeft 11s ease-in-out infinite;
+    }
 
-/* 🔥 SCAN LINE */
+    .bg-orb-right {
+      right: -90px;
+      background: radial-gradient(circle, rgba(255,77,77,0.16), transparent 70%);
+      animation: sideOrbRight 11s ease-in-out infinite;
+    }
 
-.scan-line {
-  position: absolute;
-  width: 100%;
-  height: 3px;
+    @keyframes sideOrbLeft {
+      0%, 100% { transform: translateY(-50%) scale(1); opacity: 0.75; }
+      50% { transform: translateY(-50%) scale(1.12); opacity: 1; }
+    }
 
-  background: linear-gradient(to right, transparent, #00ffc8, transparent);
+    @keyframes sideOrbRight {
+      0%, 100% { transform: translateY(-50%) scale(1); opacity: 0.75; }
+      50% { transform: translateY(-50%) scale(1.12); opacity: 1; }
+    }
 
-  animation: scanMove 4s linear infinite;
-}
+    #marketCanvas {
+      position: absolute;
+      inset: 0;
+      z-index: 1;
+      pointer-events: none;
+    }
 
-@keyframes scanMove {
-  0% { top: -10%; }
-  100% { top: 110%; }
-}
+    /* =========================================================
+       004. CENTERED LOGIN WRAP
+    ========================================================= */
+    .center-wrap {
+      position: fixed;
+      inset: 0;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      z-index: 10;
+      pointer-events: none;
+    }
 
-/* 🔥 SIGNALS */
+    /* =========================================================
+       005. LOGIN PANEL
+    ========================================================= */
+    .login-shell {
+      pointer-events: auto;
+      position: relative;
+      width: min(470px, calc(100vw - 44px));
+      border-radius: 28px;
+      background:
+        linear-gradient(180deg, rgba(255,255,255,0.055), rgba(255,255,255,0.028)),
+        linear-gradient(145deg, rgba(9,16,26,0.82), rgba(5,10,18,0.92));
+      border: 1px solid rgba(255,255,255,0.11);
+      backdrop-filter: blur(28px);
+      box-shadow:
+        0 40px 120px rgba(0,0,0,0.72),
+        0 0 55px rgba(0,255,200,0.08);
+      overflow: hidden;
+      isolation: isolate;
+    }
 
-.signal {
-  position: absolute;
-  width: 6px;
-  height: 6px;
+    .login-shell::before {
+      content: "";
+      position: absolute;
+      inset: 0;
+      background:
+        radial-gradient(circle at top left, rgba(0,255,200,0.10), transparent 28%),
+        radial-gradient(circle at top right, rgba(0,170,255,0.08), transparent 24%);
+      pointer-events: none;
+      z-index: 0;
+    }
 
-  background: #00ffc8;
-  border-radius: 50%;
+    .panel-topline {
+      position: absolute;
+      top: 0;
+      left: -20%;
+      width: 140%;
+      height: 2px;
+      background: linear-gradient(90deg, transparent, rgba(0,255,200,0.92), transparent);
+      opacity: 0.78;
+      animation: topSweep 4s linear infinite;
+      z-index: 1;
+    }
 
-  box-shadow: 0 0 12px #00ffc8;
+    @keyframes topSweep {
+      from { transform: translateX(-18%); }
+      to { transform: translateX(18%); }
+    }
 
-  animation: signalMove linear infinite;
-}
+    .corner {
+      position: absolute;
+      width: 26px;
+      height: 26px;
+      z-index: 1;
+      opacity: 0.7;
+    }
 
-@keyframes signalMove {
-  0% {
-    transform: translate(0, 0);
-    opacity: 0;
-  }
-  20% { opacity: 1; }
-  80% { opacity: 1; }
-  100% {
-    transform: translate(200px, -120px);
-    opacity: 0;
-  }
-}
+    .corner::before,
+    .corner::after {
+      content: "";
+      position: absolute;
+      background: rgba(0,255,200,0.7);
+      box-shadow: 0 0 10px rgba(0,255,200,0.25);
+    }
 
-/* 🔥 GLOW LAYER */
+    .corner.tl { top: 16px; left: 16px; }
+    .corner.tr { top: 16px; right: 16px; }
+    .corner.bl { bottom: 16px; left: 16px; }
+    .corner.br { bottom: 16px; right: 16px; }
 
-#glow {
-  position: absolute;
-  width: 600px;
-  height: 600px;
+    .corner.tl::before,
+    .corner.bl::before,
+    .corner.tr::before,
+    .corner.br::before {
+      width: 2px;
+      height: 100%;
+    }
 
-  background: radial-gradient(circle, rgba(0,255,200,0.25), transparent 70%);
-  filter: blur(120px);
+    .corner.tl::after,
+    .corner.bl::after,
+    .corner.tr::after,
+    .corner.br::after {
+      width: 100%;
+      height: 2px;
+    }
 
-  animation: glowMove 10s ease-in-out infinite;
-}
+    .corner.tl::before,
+    .corner.bl::before { left: 0; top: 0; }
 
-@keyframes glowMove {
-  0%,100% { transform: translate(0,0); }
-  50% { transform: translate(100px,-80px); }
-}
+    .corner.tr::before,
+    .corner.br::before { right: 0; top: 0; }
 
-/* ================= LOGIN ================= */
+    .corner.tl::after,
+    .corner.tr::after { top: 0; left: 0; }
 
-.login-box {
-  position: relative;
-  width: 460px;
-  padding: 45px;
+    .corner.bl::after,
+    .corner.br::after { bottom: 0; left: 0; }
 
-  background: rgba(0,0,0,0.75);
-  border: 1px solid rgba(0,255,200,0.25);
-  border-radius: 18px;
+    .login-inner {
+      position: relative;
+      z-index: 2;
+      padding: 34px 34px 30px;
+    }
 
-  backdrop-filter: blur(18px);
-  text-align: center;
+    /* =========================================================
+       006. HEADER
+    ========================================================= */
+    .brand-mark {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      margin-bottom: 12px;
+    }
 
-  z-index: 2;
-}
+    .brand-mark img {
+      width: 108px;
+      max-width: 28vw;
+      display: block;
+      filter:
+        brightness(0) invert(1)
+        drop-shadow(0 0 14px rgba(0,255,200,0.85))
+        drop-shadow(0 0 36px rgba(0,255,200,0.34));
+      animation: wolfPulse 4.2s ease-in-out infinite;
+    }
 
-/* LOGO */
+    @keyframes wolfPulse {
+      0%, 100% { transform: scale(1); opacity: 0.95; }
+      50% { transform: scale(1.06); opacity: 1; }
+    }
 
-#wolf-logo {
-  width: 100px;
-  margin-bottom: 18px;
+    .eyebrow {
+      text-align: center;
+      font-family: "Orbitron", sans-serif;
+      font-size: 0.78rem;
+      letter-spacing: 0.42em;
+      color: rgba(255,255,255,0.55);
+      text-transform: uppercase;
+      margin-bottom: 10px;
+    }
 
-  filter:
-    invert(1)
-    drop-shadow(0 0 15px rgba(0,255,200,0.8))
-    drop-shadow(0 0 40px rgba(0,255,200,0.4));
+    .main-title {
+      text-align: center;
+      font-family: "Orbitron", sans-serif;
+      font-size: clamp(1.45rem, 2vw, 1.8rem);
+      line-height: 1.2;
+      letter-spacing: 0.22em;
+      text-transform: uppercase;
+      background: linear-gradient(90deg, #00ffc8, #7fe9ff);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      margin-bottom: 10px;
+      text-shadow: 0 0 20px rgba(0,255,200,0.14);
+    }
 
-  animation: pulse 3s infinite;
-}
+    .subtitle {
+      text-align: center;
+      color: rgba(255,255,255,0.68);
+      font-size: 0.94rem;
+      line-height: 1.55;
+      margin-bottom: 22px;
+    }
 
-@keyframes pulse {
-  0%,100% { transform: scale(1); }
-  50% { transform: scale(1.1); }
-}
+    .status-row {
+      display: flex;
+      justify-content: center;
+      gap: 10px;
+      flex-wrap: wrap;
+      margin-bottom: 26px;
+    }
 
-/* TITLE */
+    .status-chip {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      padding: 8px 12px;
+      border-radius: 999px;
+      border: 1px solid rgba(255,255,255,0.10);
+      background: rgba(255,255,255,0.03);
+      font-size: 0.75rem;
+      color: rgba(255,255,255,0.72);
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      backdrop-filter: blur(10px);
+    }
 
-.login-box h2 {
-  font-family: 'Orbitron';
-  font-size: 28px;
-  letter-spacing: 3px;
-  color: #00ffc8;
-  margin-bottom: 30px;
-}
+    .status-dot {
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      background: #00ffc8;
+      box-shadow: 0 0 12px #00ffc8;
+      animation: chipBlink 1.3s ease-in-out infinite;
+      flex: 0 0 auto;
+    }
 
-/* INPUT */
+    .status-chip.warn .status-dot {
+      background: #ffb347;
+      box-shadow: 0 0 12px #ffb347;
+    }
 
-input {
-  width: 100%;
-  padding: 15px;
-  margin-bottom: 20px;
+    @keyframes chipBlink {
+      0%, 100% { transform: scale(1); opacity: 1; }
+      50% { transform: scale(1.28); opacity: 0.48; }
+    }
 
-  font-size: 16px;
+    /* =========================================================
+       007. FORM
+    ========================================================= */
+    .field-group {
+      margin-bottom: 16px;
+    }
 
-  background: transparent;
-  border: 1px solid rgba(255,255,255,0.2);
-  color: #fff;
-}
+    .field-label {
+      display: block;
+      font-size: 0.78rem;
+      letter-spacing: 0.14em;
+      text-transform: uppercase;
+      color: rgba(255,255,255,0.52);
+      margin-bottom: 8px;
+      font-family: "Orbitron", sans-serif;
+    }
 
-input:focus {
-  border-color: #00ffc8;
-}
+    .input-wrap {
+      position: relative;
+    }
 
-/* BUTTON */
+    .input-wrap::before {
+      content: "";
+      position: absolute;
+      inset: 0;
+      border-radius: 12px;
+      pointer-events: none;
+      background:
+        linear-gradient(180deg, rgba(255,255,255,0.03), rgba(255,255,255,0.015));
+    }
 
-button {
-  width: 100%;
-  padding: 15px;
+    .input-wrap input {
+      width: 100%;
+      position: relative;
+      z-index: 1;
+      padding: 15px 16px;
+      border-radius: 12px;
+      border: 1px solid rgba(255,255,255,0.12);
+      background: rgba(255,255,255,0.03);
+      color: #ffffff;
+      font-size: 0.96rem;
+      font-family: inherit;
+      outline: none;
+      transition: border-color 0.25s ease, box-shadow 0.25s ease, background 0.25s ease, transform 0.25s ease;
+      box-shadow: inset 0 0 0 1px rgba(255,255,255,0.01);
+    }
 
-  font-size: 16px;
-  font-weight: 600;
+    .input-wrap input::placeholder {
+      color: rgba(255,255,255,0.34);
+    }
 
-  background: transparent;
-  border: 1px solid #00ffc8;
-  color: #00ffc8;
+    .input-wrap input:focus {
+      border-color: rgba(0,255,200,0.6);
+      background: rgba(255,255,255,0.045);
+      box-shadow:
+        0 0 0 3px rgba(0,255,200,0.08),
+        0 0 18px rgba(0,255,200,0.12);
+      transform: translateY(-1px);
+    }
 
-  cursor: pointer;
-  transition: 0.3s;
-}
+    .field-hint {
+      margin-top: 8px;
+      font-size: 0.78rem;
+      color: rgba(255,255,255,0.40);
+    }
 
-button:hover {
-  background: #00ffc8;
-  color: #000;
-}
+    /* =========================================================
+       008. ACTION BUTTON
+    ========================================================= */
+    .action-wrap {
+      margin-top: 20px;
+    }
 
-/* ERROR */
+    .enter-btn {
+      width: 100%;
+      border: 1px solid rgba(0,255,200,0.65);
+      background:
+        linear-gradient(180deg, rgba(0,255,200,0.08), rgba(0,255,200,0.04));
+      color: #00ffc8;
+      border-radius: 14px;
+      padding: 15px 18px;
+      cursor: pointer;
+      font-family: "Orbitron", sans-serif;
+      font-size: 0.9rem;
+      letter-spacing: 0.18em;
+      text-transform: uppercase;
+      transition: transform 0.28s ease, box-shadow 0.28s ease, border-color 0.28s ease, background 0.28s ease, color 0.28s ease;
+      box-shadow:
+        0 0 0 1px rgba(0,255,200,0.08) inset,
+        0 12px 30px rgba(0,255,200,0.08);
+      position: relative;
+      overflow: hidden;
+    }
 
-.error {
-  color: #ff4d4d;
-  margin-top: 12px;
-  font-size: 14px;
-}
+    .enter-btn::before {
+      content: "";
+      position: absolute;
+      top: 0;
+      left: -30%;
+      width: 40%;
+      height: 100%;
+      background: linear-gradient(90deg, transparent, rgba(255,255,255,0.18), transparent);
+      transform: skewX(-20deg);
+      transition: transform 0.55s ease;
+    }
 
-</style>
+    .enter-btn:hover {
+      transform: translateY(-2px);
+      background:
+        linear-gradient(180deg, rgba(0,255,200,0.95), rgba(0,230,180,0.92));
+      color: #031116;
+      border-color: rgba(0,255,200,0.95);
+      box-shadow:
+        0 18px 36px rgba(0,255,200,0.18),
+        0 0 24px rgba(0,255,200,0.22);
+    }
+
+    .enter-btn:hover::before {
+      transform: translateX(280%) skewX(-20deg);
+    }
+
+    .enter-btn:active {
+      transform: translateY(0);
+    }
+
+    /* =========================================================
+       009. FOOT INFO
+    ========================================================= */
+    .panel-footer {
+      margin-top: 18px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 14px;
+      font-size: 0.78rem;
+      color: rgba(255,255,255,0.42);
+    }
+
+    .footer-left,
+    .footer-right {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .tiny-dot {
+      width: 6px;
+      height: 6px;
+      border-radius: 50%;
+      background: rgba(255,255,255,0.42);
+    }
+
+    /* =========================================================
+       010. ERROR
+    ========================================================= */
+    #error {
+      min-height: 18px;
+      margin-top: 12px;
+      text-align: center;
+      font-size: 0.82rem;
+      letter-spacing: 0.08em;
+      color: #ff6c7d;
+      text-transform: uppercase;
+    }
+
+    .shake {
+      animation: shakePanel 0.38s ease;
+    }
+
+    @keyframes shakePanel {
+      0%, 100% { transform: translateX(0); }
+      20% { transform: translateX(-6px); }
+      40% { transform: translateX(6px); }
+      60% { transform: translateX(-4px); }
+      80% { transform: translateX(4px); }
+    }
+
+    /* =========================================================
+       011. BOOT SCREEN
+    ========================================================= */
+    .boot-screen {
+      position: fixed;
+      inset: 0;
+      z-index: 30;
+      background:
+        radial-gradient(circle at 50% 50%, rgba(0,255,200,0.05), transparent 30%),
+        linear-gradient(180deg, #010304, #03060a 70%, #010203);
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      padding: 24px;
+    }
+
+    .boot-card {
+      width: min(900px, 100%);
+      min-height: 420px;
+      border-radius: 24px;
+      background:
+        linear-gradient(180deg, rgba(255,255,255,0.03), rgba(255,255,255,0.015)),
+        linear-gradient(145deg, rgba(5,10,16,0.95), rgba(2,5,9,0.98));
+      border: 1px solid rgba(0,255,200,0.14);
+      box-shadow:
+        0 40px 120px rgba(0,0,0,0.72),
+        0 0 40px rgba(0,255,200,0.08);
+      padding: 24px;
+      overflow: hidden;
+      position: relative;
+    }
+
+    .boot-card::before {
+      content: "";
+      position: absolute;
+      top: 0;
+      left: -25%;
+      width: 150%;
+      height: 2px;
+      background: linear-gradient(90deg, transparent, rgba(0,255,200,0.9), transparent);
+      animation: topSweep 3.5s linear infinite;
+    }
+
+    .boot-head {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 18px;
+      color: rgba(255,255,255,0.56);
+      font-family: "Orbitron", sans-serif;
+      font-size: 0.78rem;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+    }
+
+    .boot-dots {
+      display: flex;
+      gap: 7px;
+    }
+
+    .boot-dots span {
+      width: 9px;
+      height: 9px;
+      border-radius: 50%;
+      background: rgba(255,255,255,0.18);
+    }
+
+    .boot-dots span:nth-child(1) { background: rgba(255,77,77,0.85); }
+    .boot-dots span:nth-child(2) { background: rgba(255,179,71,0.85); }
+    .boot-dots span:nth-child(3) { background: rgba(0,255,200,0.85); }
+
+    .terminal {
+      height: 320px;
+      overflow: hidden;
+      font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", monospace;
+      font-size: 0.95rem;
+      line-height: 1.8;
+      color: #9afee7;
+      white-space: pre-wrap;
+    }
+
+    .terminal-line {
+      opacity: 0;
+      animation: termFadeIn 0.22s ease forwards;
+    }
+
+    @keyframes termFadeIn {
+      to { opacity: 1; }
+    }
+
+    .cursor {
+      display: inline-block;
+      width: 10px;
+      height: 1.1em;
+      background: rgba(0,255,200,0.82);
+      vertical-align: -2px;
+      margin-left: 6px;
+      animation: cursorBlink 1s step-end infinite;
+    }
+
+    @keyframes cursorBlink {
+      50% { opacity: 0; }
+    }
+
+    /* =========================================================
+       012. RESPONSIVE
+    ========================================================= */
+    @media (max-width: 780px) {
+      .login-shell {
+        width: min(460px, calc(100vw - 28px));
+      }
+
+      .login-inner {
+        padding: 28px 22px 24px;
+      }
+
+      .main-title {
+        font-size: 1.35rem;
+        letter-spacing: 0.16em;
+      }
+
+      .subtitle {
+        font-size: 0.88rem;
+      }
+
+      .panel-footer {
+        flex-direction: column;
+        justify-content: center;
+      }
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+      *,
+      *::before,
+      *::after {
+        animation-duration: 0.001ms !important;
+        animation-iteration-count: 1 !important;
+        transition-duration: 0.001ms !important;
+      }
+    }
+  </style>
 </head>
-
 <body>
+  <div id="app">
+    <div class="bg-noise"></div>
+    <div class="bg-grid"></div>
+    <canvas id="marketCanvas"></canvas>
+    <div class="bg-center-glow"></div>
+    <div class="bg-orb-left"></div>
+    <div class="bg-orb-right"></div>
 
-<!-- BACKGROUND -->
-<div id="bg">
-  <div id="grid"></div>
-  <div class="scan-line"></div>
-  <div id="glow"></div>
-</div>
+    <div class="center-wrap">
+      <div class="login-shell" id="loginShell">
+        <div class="panel-topline"></div>
+        <div class="corner tl"></div>
+        <div class="corner tr"></div>
+        <div class="corner bl"></div>
+        <div class="corner br"></div>
 
-<!-- LOGIN -->
-<div class="login-box">
+        <div class="login-inner">
+          <div class="brand-mark">
+            <img src="./wolf-logo-transparent.png" alt="WOLF logo" />
+          </div>
 
-  <img src="./wolf-logo-transparent.png" id="wolf-logo">
+          <div class="eyebrow">Autonomous Trading Infrastructure</div>
+          <h1 class="main-title">WOLF Ecosystem Access</h1>
+          <p class="subtitle">
+            Secure authentication layer for high-frequency autonomous intelligence systems.
+          </p>
 
-  <h2>WOLF ECOSYSTEM ACCESS</h2>
+          <div class="status-row">
+            <div class="status-chip">
+              <span class="status-dot"></span>
+              Secure Node
+            </div>
+            <div class="status-chip warn">
+              <span class="status-dot"></span>
+              Controlled Access
+            </div>
+          </div>
 
-  <input type="text" id="username" placeholder="Username">
-  <input type="password" id="password" placeholder="Password">
+          <form id="loginForm" novalidate>
+            <div class="field-group">
+              <label class="field-label" for="username">Operator ID</label>
+              <div class="input-wrap">
+                <input id="username" type="text" placeholder="Enter operator name" autocomplete="username" />
+              </div>
+              <div class="field-hint">Authorized control identity required.</div>
+            </div>
 
-  <button onclick="login()">ENTER SYSTEM</button>
+            <div class="field-group">
+              <label class="field-label" for="password">Access Key</label>
+              <div class="input-wrap">
+                <input id="password" type="password" placeholder="Enter secure key" autocomplete="current-password" />
+              </div>
+              <div class="field-hint">Encrypted session verification enabled.</div>
+            </div>
 
-  <div id="error" class="error"></div>
-</div>
+            <div class="action-wrap">
+              <button class="enter-btn" type="submit">Enter System</button>
+            </div>
 
-<script>
+            <div id="error" aria-live="polite"></div>
+          </form>
 
-/* LOGIN */
-
-function login() {
-  const user = document.getElementById("username").value;
-  const pass = document.getElementById("password").value;
-
-  if (user === "admin" && pass === "wolf123") {
-    localStorage.setItem("auth", "true");
-
-    document.body.innerHTML = `
-      <div style="color:#00ffc8; font-family:Orbitron; text-align:center; margin-top:20%;">
-        ACCESS GRANTED<br><br>
-        LOADING WOLF CORE...
+          <div class="panel-footer">
+            <div class="footer-left">
+              <span class="tiny-dot"></span>
+              <span>Private Session</span>
+            </div>
+            <div class="footer-right">
+              <span>WOLF Core</span>
+              <span class="tiny-dot"></span>
+            </div>
+          </div>
+        </div>
       </div>
-    `;
+    </div>
+  </div>
 
-    setTimeout(() => {
-      window.location.href = "index.html";
-    }, 1200);
+  <script>
+    /* =========================================================
+       013. MARKET BACKGROUND ENGINE
+    ========================================================= */
+    const canvas = document.getElementById("marketCanvas");
+    const ctx = canvas.getContext("2d");
 
-  } else {
-    document.getElementById("error").innerText = "ACCESS DENIED";
-  }
-}
+    let w, h, dpr;
 
-/* 🔥 SIGNALS */
+    function resizeCanvas() {
+      dpr = Math.max(1, window.devicePixelRatio || 1);
+      w = window.innerWidth;
+      h = window.innerHeight;
+      canvas.width = Math.floor(w * dpr);
+      canvas.height = Math.floor(h * dpr);
+      canvas.style.width = w + "px";
+      canvas.style.height = h + "px";
+      ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+    }
 
-function initSignals() {
-  const bg = document.getElementById("bg");
+    resizeCanvas();
+    window.addEventListener("resize", resizeCanvas);
 
-  for (let i = 0; i < 70; i++) {
-    const dot = document.createElement("div");
-    dot.className = "signal";
+    /* -------------------------
+       PARTICLES
+    ------------------------- */
+    class DepthParticle {
+      constructor(layer) {
+        this.layer = layer;
+        this.reset(true);
+      }
 
-    dot.style.top = Math.random() * 100 + "%";
-    dot.style.left = Math.random() * 100 + "%";
+      reset(initial = false) {
+        this.x = initial ? Math.random() * w : w + Math.random() * 180;
+        this.y = Math.random() * h;
+        this.size = this.layer === 1 ? 1 : this.layer === 2 ? 1.8 : 2.4;
+        this.speed = this.layer === 1 ? 0.12 : this.layer === 2 ? 0.28 : 0.42;
+        this.alpha = this.layer === 1 ? 0.035 : this.layer === 2 ? 0.06 : 0.085;
+      }
 
-    dot.style.animationDuration = (3 + Math.random() * 4) + "s";
+      update() {
+        this.x -= this.speed;
+        if (this.x < -10) this.reset();
+      }
 
-    bg.appendChild(dot);
-  }
-}
+      draw() {
+        ctx.fillStyle = `rgba(255,255,255,${this.alpha})`;
+        ctx.fillRect(this.x, this.y, this.size, this.size);
+      }
+    }
 
-initSignals();
+    const particles = [];
+    for (let i = 0; i < 70; i++) particles.push(new DepthParticle(1));
+    for (let i = 0; i < 50; i++) particles.push(new DepthParticle(2));
+    for (let i = 0; i < 34; i++) particles.push(new DepthParticle(3));
 
-</script>
+    /* -------------------------
+       CANDLES
+    ------------------------- */
+    class PremiumCandle {
+      constructor(zone) {
+        this.zone = zone;
+        this.reset(true);
+      }
 
+      reset(initial = false) {
+        const zoneStart = this.zone === "left" ? 0 : w * 0.55;
+        const zoneWidth = this.zone === "left" ? w * 0.45 : w * 0.45;
+
+        this.x = initial
+          ? zoneStart + Math.random() * zoneWidth
+          : w + Math.random() * 180;
+
+        this.base = h * (0.30 + Math.random() * 0.40);
+        this.body = 22 + Math.random() * 78;
+        this.wickTop = 8 + Math.random() * 20;
+        this.wickBottom = 8 + Math.random() * 20;
+        this.width = 4 + Math.random() * 2;
+        this.speed = 0.35 + Math.random() * 0.55;
+        this.up = Math.random() > 0.48;
+        this.alpha = 0.16 + Math.random() * 0.16;
+      }
+
+      update() {
+        this.x -= this.speed;
+        if (this.x < -20) this.reset();
+      }
+
+      draw() {
+        const color = this.up ? "#00ffc8" : "#ff4d4d";
+
+        ctx.globalAlpha = this.alpha;
+        ctx.strokeStyle = color;
+        ctx.lineWidth = 1;
+
+        ctx.beginPath();
+        ctx.moveTo(this.x + this.width / 2, this.base - this.body - this.wickTop);
+        ctx.lineTo(this.x + this.width / 2, this.base + this.wickBottom);
+        ctx.stroke();
+
+        ctx.shadowBlur = 18;
+        ctx.shadowColor = color;
+        ctx.fillStyle = color;
+        ctx.fillRect(this.x, this.base - this.body, this.width, this.body);
+        ctx.shadowBlur = 0;
+        ctx.globalAlpha = 1;
+      }
+    }
+
+    const candles = [];
+    for (let i = 0; i < 48; i++) candles.push(new PremiumCandle("left"));
+    for (let i = 0; i < 48; i++) candles.push(new PremiumCandle("right"));
+
+    /* -------------------------
+       DOTTED CURVE LINES
+    ------------------------- */
+    class DottedCurve {
+      constructor(color, direction, region, biasY) {
+        this.color = color;
+        this.direction = direction;
+        this.region = region;
+        this.biasY = biasY;
+        this.reset(true);
+      }
+
+      reset(initial = false) {
+        this.points = [];
+        const count = 10;
+        const step = 120;
+
+        let baseX;
+        if (this.direction < 0) {
+          baseX = initial ? Math.random() * 140 : 0;
+          for (let i = 0; i < count; i++) {
+            this.points.push({
+              x: baseX + i * step,
+              y: h * this.biasY + (Math.random() - 0.5) * 90
+            });
+          }
+        } else {
+          baseX = initial ? w - Math.random() * 140 : w;
+          for (let i = 0; i < count; i++) {
+            this.points.push({
+              x: baseX - i * step,
+              y: h * this.biasY + (Math.random() - 0.5) * 90
+            });
+          }
+        }
+
+        this.speed = 0.55 + Math.random() * 0.5;
+        this.phase = Math.random() * Math.PI * 2;
+      }
+
+      update() {
+        this.phase += 0.01;
+
+        for (let i = 0; i < this.points.length; i++) {
+          this.points[i].x += this.direction * this.speed;
+          this.points[i].y += Math.sin(this.phase + i * 0.42) * 0.18;
+        }
+
+        if (this.direction < 0 && this.points[this.points.length - 1].x < -180) {
+          this.reset(false);
+        }
+
+        if (this.direction > 0 && this.points[this.points.length - 1].x > w + 180) {
+          this.reset(false);
+        }
+      }
+
+      buildCurvePoints() {
+        const sampled = [];
+        if (this.points.length < 2) return sampled;
+
+        sampled.push({ x: this.points[0].x, y: this.points[0].y });
+
+        for (let i = 1; i < this.points.length - 1; i++) {
+          const p0 = this.points[i - 1];
+          const p1 = this.points[i];
+          const p2 = this.points[i + 1];
+
+          for (let t = 0; t <= 1; t += 0.12) {
+            const xa = p0.x + (p1.x - p0.x) * t;
+            const ya = p0.y + (p1.y - p0.y) * t;
+            const xb = p1.x + (p2.x - p1.x) * t;
+            const yb = p1.y + (p2.y - p1.y) * t;
+
+            const x = xa + (xb - xa) * t;
+            const y = ya + (yb - ya) * t;
+
+            sampled.push({ x, y });
+          }
+        }
+
+        sampled.push(this.points[this.points.length - 1]);
+        return sampled;
+      }
+
+      draw() {
+        const dots = this.buildCurvePoints();
+
+        for (let i = 0; i < dots.length; i += 2) {
+          const p = dots[i];
+          const alpha = 0.10 + (i / dots.length) * 0.22;
+
+          ctx.beginPath();
+          ctx.fillStyle = this.color.replace("ALPHA", alpha.toFixed(3));
+          ctx.shadowBlur = 14;
+          ctx.shadowColor = this.color.replace("ALPHA", "0.30");
+          ctx.arc(p.x, p.y, 1.9, 0, Math.PI * 2);
+          ctx.fill();
+          ctx.shadowBlur = 0;
+        }
+
+        ctx.beginPath();
+        const first = dots[0];
+        if (!first) return;
+        ctx.moveTo(first.x, first.y);
+
+        for (let i = 1; i < dots.length; i++) {
+          ctx.lineTo(dots[i].x, dots[i].y);
+        }
+
+        ctx.strokeStyle = this.color.replace("ALPHA", "0.06");
+        ctx.lineWidth = 1.2;
+        ctx.setLineDash([2, 10]);
+        ctx.stroke();
+        ctx.setLineDash([]);
+      }
+    }
+
+    const dottedCurves = [
+      new DottedCurve("rgba(0,255,200,ALPHA)", -1, "left", 0.34),
+      new DottedCurve("rgba(0,255,200,ALPHA)", -1, "left", 0.52),
+      new DottedCurve("rgba(0,255,200,ALPHA)", -1, "left", 0.66),
+      new DottedCurve("rgba(255,77,77,ALPHA)", 1, "right", 0.30),
+      new DottedCurve("rgba(255,77,77,ALPHA)", 1, "right", 0.48),
+      new DottedCurve("rgba(255,77,77,ALPHA)", 1, "right", 0.64)
+    ];
+
+    /* -------------------------
+       SIGNAL PULSES
+    ------------------------- */
+    class SignalPulse {
+      constructor(side) {
+        this.side = side;
+        this.reset(true);
+      }
+
+      reset(initial = false) {
+        this.progress = initial ? Math.random() : 0;
+        this.speed = 0.0035 + Math.random() * 0.002;
+        this.laneY = h * (0.36 + Math.random() * 0.28);
+        this.amplitude = 20 + Math.random() * 28;
+      }
+
+      update() {
+        this.progress += this.speed;
+        if (this.progress > 1) this.reset();
+      }
+
+      draw() {
+        const centerX = w / 2;
+        let x;
+
+        if (this.side === "left") {
+          x = w * 0.08 + (centerX - w * 0.18) * this.progress;
+        } else {
+          x = w * 0.92 - (w * 0.92 - (centerX + w * 0.02)) * this.progress;
+        }
+
+        const y = this.laneY + Math.sin(this.progress * Math.PI * 4) * this.amplitude * 0.18;
+        const color = this.side === "left" ? "#00ffc8" : "#ff4d4d";
+
+        ctx.beginPath();
+        ctx.fillStyle = color;
+        ctx.shadowBlur = 20;
+        ctx.shadowColor = color;
+        ctx.arc(x, y, 3.4, 0, Math.PI * 2);
+        ctx.fill();
+        ctx.shadowBlur = 0;
+      }
+    }
+
+    const pulses = [];
+    for (let i = 0; i < 6; i++) pulses.push(new SignalPulse("left"));
+    for (let i = 0; i < 6; i++) pulses.push(new SignalPulse("right"));
+
+    /* -------------------------
+       CENTER FLOW LINES
+    ------------------------- */
+    function drawCenterFlow(time) {
+      const cx = w / 2;
+
+      for (let i = 0; i < 18; i++) {
+        const y = h * 0.22 + i * (h * 0.032);
+        const drift = Math.sin(time * 0.0014 + i * 0.85) * 18;
+
+        ctx.strokeStyle = "rgba(255,255,255,0.045)";
+        ctx.lineWidth = 1;
+
+        ctx.beginPath();
+        ctx.moveTo(cx - 100 + drift, y);
+        ctx.lineTo(cx - 18 + drift, y);
+        ctx.stroke();
+
+        ctx.beginPath();
+        ctx.moveTo(cx + 18 + drift, y);
+        ctx.lineTo(cx + 100 + drift, y);
+        ctx.stroke();
+      }
+    }
+
+    /* -------------------------
+       BIG GLOW TRAILS
+    ------------------------- */
+    function drawSoftTrails() {
+      const gradLeft = ctx.createLinearGradient(0, 0, w * 0.45, 0);
+      gradLeft.addColorStop(0, "rgba(0,255,200,0.00)");
+      gradLeft.addColorStop(0.5, "rgba(0,255,200,0.05)");
+      gradLeft.addColorStop(1, "rgba(0,255,200,0.00)");
+
+      ctx.fillStyle = gradLeft;
+      ctx.fillRect(0, h * 0.25, w * 0.45, h * 0.45);
+
+      const gradRight = ctx.createLinearGradient(w, 0, w * 0.55, 0);
+      gradRight.addColorStop(0, "rgba(255,77,77,0.00)");
+      gradRight.addColorStop(0.5, "rgba(255,77,77,0.05)");
+      gradRight.addColorStop(1, "rgba(255,77,77,0.00)");
+
+      ctx.fillStyle = gradRight;
+      ctx.fillRect(w * 0.55, h * 0.25, w * 0.45, h * 0.45);
+    }
+
+    /* -------------------------
+       MAIN LOOP
+    ------------------------- */
+    function animate(time = 0) {
+      ctx.clearRect(0, 0, w, h);
+
+      drawSoftTrails();
+
+      particles.forEach(p => {
+        p.update();
+        p.draw();
+      });
+
+      dottedCurves.forEach(curve => {
+        curve.update();
+        curve.draw();
+      });
+
+      candles.forEach(candle => {
+        candle.update();
+        candle.draw();
+      });
+
+      pulses.forEach(pulse => {
+        pulse.update();
+        pulse.draw();
+      });
+
+      drawCenterFlow(time);
+
+      requestAnimationFrame(animate);
+    }
+
+    animate();
+
+    /* =========================================================
+       014. LOGIN LOGIC
+    ========================================================= */
+    const loginForm = document.getElementById("loginForm");
+    const loginShell = document.getElementById("loginShell");
+    const errorEl = document.getElementById("error");
+
+    loginForm.addEventListener("submit", (e) => {
+      e.preventDefault();
+      handleLogin();
+    });
+
+    function showError(message) {
+      errorEl.textContent = message;
+      loginShell.classList.remove("shake");
+      void loginShell.offsetWidth;
+      loginShell.classList.add("shake");
+    }
+
+    function clearError() {
+      errorEl.textContent = "";
+    }
+
+    function handleLogin() {
+      const user = document.getElementById("username").value.trim();
+      const pass = document.getElementById("password").value.trim();
+
+      clearError();
+
+      if (!user || !pass) {
+        showError("Credentials required");
+        return;
+      }
+
+      runBootSequence(user, pass);
+    }
+
+    /* =========================================================
+       015. BOOT SEQUENCE
+    ========================================================= */
+    function runBootSequence(user, pass) {
+      const overlay = document.createElement("div");
+      overlay.className = "boot-screen";
+
+      overlay.innerHTML = `
+        <div class="boot-card">
+          <div class="boot-head">
+            <span>WOLF SECURE TERMINAL</span>
+            <div class="boot-dots">
+              <span></span><span></span><span></span>
+            </div>
+          </div>
+          <div class="terminal" id="terminal"></div>
+        </div>
+      `;
+
+      document.body.appendChild(overlay);
+
+      const terminal = overlay.querySelector("#terminal");
+
+      const lines = [
+        "> INITIALIZING WOLF CORE...",
+        "> LOADING NEURAL TRADING FABRIC...",
+        "> SYNCHRONIZING MARKET VISUAL LAYERS...",
+        "> ESTABLISHING ENCRYPTED AUTH CHANNEL...",
+        "> VERIFYING OPERATOR IDENTITY...",
+        "> CHECKING SESSION INTEGRITY...",
+        "> PREPARING SECURE CONTROL SURFACE..."
+      ];
+
+      let index = 0;
+
+      function addLine(text) {
+        const line = document.createElement("div");
+        line.className = "terminal-line";
+        line.textContent = text;
+        terminal.appendChild(line);
+        terminal.scrollTop = terminal.scrollHeight;
+      }
+
+      function nextLine() {
+        if (index < lines.length) {
+          addLine(lines[index]);
+          index++;
+          setTimeout(nextLine, 320);
+        } else {
+          authenticate();
+        }
+      }
+
+      function authenticate() {
+        setTimeout(() => {
+          if (user === "admin" && pass === "wolf123") {
+            addLine("> ACCESS GRANTED");
+            addLine("> ENTERING WOLF ECOSYSTEM...");
+            localStorage.setItem("auth", "true");
+
+            const cursor = document.createElement("span");
+            cursor.className = "cursor";
+            terminal.appendChild(cursor);
+
+            setTimeout(() => {
+              window.location.href = "index.html";
+            }, 1100);
+          } else {
+            addLine("> ACCESS DENIED");
+            addLine("> INVALID CREDENTIAL PAIR");
+            setTimeout(() => {
+              overlay.remove();
+              showError("Access denied");
+            }, 900);
+          }
+        }, 420);
+      }
+
+      nextLine();
+    }
+  </script>
 </body>
 </html>
