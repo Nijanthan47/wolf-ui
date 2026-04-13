@@ -1,0 +1,284 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>WOLF Access</title>
+
+<link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@500;700&family=Inter:wght@300;400;600&display=swap" rel="stylesheet">
+
+<style>
+
+/* ================= BASE ================= */
+
+body {
+  margin: 0;
+  height: 100vh;
+  background: #000;
+  color: #fff;
+
+  display: flex;
+  justify-content: center;
+  align-items: center;
+
+  font-family: 'Inter', sans-serif;
+  overflow: hidden;
+}
+
+/* ================= BACKGROUND ================= */
+
+#bg {
+  position: absolute;
+  width: 100%;
+  height: 100%;
+  overflow: hidden;
+}
+
+/* 🔥 GRID */
+
+#grid {
+  position: absolute;
+  width: 100%;
+  height: 100%;
+
+  background:
+    linear-gradient(rgba(0,255,200,0.08) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(0,255,200,0.08) 1px, transparent 1px);
+
+  background-size: 50px 50px;
+}
+
+/* 🔥 SCAN LINE */
+
+.scan-line {
+  position: absolute;
+  width: 100%;
+  height: 3px;
+
+  background: linear-gradient(to right, transparent, #00ffc8, transparent);
+
+  animation: scanMove 4s linear infinite;
+}
+
+@keyframes scanMove {
+  0% { top: -10%; }
+  100% { top: 110%; }
+}
+
+/* 🔥 SIGNALS */
+
+.signal {
+  position: absolute;
+  width: 6px;
+  height: 6px;
+
+  background: #00ffc8;
+  border-radius: 50%;
+
+  box-shadow: 0 0 12px #00ffc8;
+
+  animation: signalMove linear infinite;
+}
+
+@keyframes signalMove {
+  0% {
+    transform: translate(0, 0);
+    opacity: 0;
+  }
+  20% { opacity: 1; }
+  80% { opacity: 1; }
+  100% {
+    transform: translate(200px, -120px);
+    opacity: 0;
+  }
+}
+
+/* 🔥 GLOW LAYER */
+
+#glow {
+  position: absolute;
+  width: 600px;
+  height: 600px;
+
+  background: radial-gradient(circle, rgba(0,255,200,0.25), transparent 70%);
+  filter: blur(120px);
+
+  animation: glowMove 10s ease-in-out infinite;
+}
+
+@keyframes glowMove {
+  0%,100% { transform: translate(0,0); }
+  50% { transform: translate(100px,-80px); }
+}
+
+/* ================= LOGIN ================= */
+
+.login-box {
+  position: relative;
+  width: 460px;
+  padding: 45px;
+
+  background: rgba(0,0,0,0.75);
+  border: 1px solid rgba(0,255,200,0.25);
+  border-radius: 18px;
+
+  backdrop-filter: blur(18px);
+  text-align: center;
+
+  z-index: 2;
+}
+
+/* LOGO */
+
+#wolf-logo {
+  width: 100px;
+  margin-bottom: 18px;
+
+  filter:
+    invert(1)
+    drop-shadow(0 0 15px rgba(0,255,200,0.8))
+    drop-shadow(0 0 40px rgba(0,255,200,0.4));
+
+  animation: pulse 3s infinite;
+}
+
+@keyframes pulse {
+  0%,100% { transform: scale(1); }
+  50% { transform: scale(1.1); }
+}
+
+/* TITLE */
+
+.login-box h2 {
+  font-family: 'Orbitron';
+  font-size: 28px;
+  letter-spacing: 3px;
+  color: #00ffc8;
+  margin-bottom: 30px;
+}
+
+/* INPUT */
+
+input {
+  width: 100%;
+  padding: 15px;
+  margin-bottom: 20px;
+
+  font-size: 16px;
+
+  background: transparent;
+  border: 1px solid rgba(255,255,255,0.2);
+  color: #fff;
+}
+
+input:focus {
+  border-color: #00ffc8;
+}
+
+/* BUTTON */
+
+button {
+  width: 100%;
+  padding: 15px;
+
+  font-size: 16px;
+  font-weight: 600;
+
+  background: transparent;
+  border: 1px solid #00ffc8;
+  color: #00ffc8;
+
+  cursor: pointer;
+  transition: 0.3s;
+}
+
+button:hover {
+  background: #00ffc8;
+  color: #000;
+}
+
+/* ERROR */
+
+.error {
+  color: #ff4d4d;
+  margin-top: 12px;
+  font-size: 14px;
+}
+
+</style>
+</head>
+
+<body>
+
+<!-- BACKGROUND -->
+<div id="bg">
+  <div id="grid"></div>
+  <div class="scan-line"></div>
+  <div id="glow"></div>
+</div>
+
+<!-- LOGIN -->
+<div class="login-box">
+
+  <img src="./wolf-logo-transparent.png" id="wolf-logo">
+
+  <h2>WOLF ECOSYSTEM ACCESS</h2>
+
+  <input type="text" id="username" placeholder="Username">
+  <input type="password" id="password" placeholder="Password">
+
+  <button onclick="login()">ENTER SYSTEM</button>
+
+  <div id="error" class="error"></div>
+</div>
+
+<script>
+
+/* LOGIN */
+
+function login() {
+  const user = document.getElementById("username").value;
+  const pass = document.getElementById("password").value;
+
+  if (user === "admin" && pass === "wolf123") {
+    localStorage.setItem("auth", "true");
+
+    document.body.innerHTML = `
+      <div style="color:#00ffc8; font-family:Orbitron; text-align:center; margin-top:20%;">
+        ACCESS GRANTED<br><br>
+        LOADING WOLF CORE...
+      </div>
+    `;
+
+    setTimeout(() => {
+      window.location.href = "index.html";
+    }, 1200);
+
+  } else {
+    document.getElementById("error").innerText = "ACCESS DENIED";
+  }
+}
+
+/* 🔥 SIGNALS */
+
+function initSignals() {
+  const bg = document.getElementById("bg");
+
+  for (let i = 0; i < 70; i++) {
+    const dot = document.createElement("div");
+    dot.className = "signal";
+
+    dot.style.top = Math.random() * 100 + "%";
+    dot.style.left = Math.random() * 100 + "%";
+
+    dot.style.animationDuration = (3 + Math.random() * 4) + "s";
+
+    bg.appendChild(dot);
+  }
+}
+
+initSignals();
+
+</script>
+
+</body>
+</html>
